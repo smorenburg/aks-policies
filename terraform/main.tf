@@ -12,6 +12,13 @@ terraform {
       version = ">= 3.2"
     }
   }
+
+  backend "azurerm" {
+    resource_group_name  = "rg-tfstate-orion-weu"
+    storage_account_name = "storionfecb5d"
+    container_name       = "tfstate"
+    key                  = "dev.tfstate"
+  }
 }
 
 provider "azurerm" {
