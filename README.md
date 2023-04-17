@@ -1,1 +1,1 @@
-# aks-policies
+# AKS policies
