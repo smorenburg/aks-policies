@@ -1,20 +1,4 @@
-# Collect the diagnostic categories.
-data "azurerm_monitor_diagnostic_categories" "kubernetes_cluster" {
-  resource_id = azurerm_kubernetes_cluster.default.id
-}
-
-locals {
-  # Set the log categories, excluding the kube-audit logs.
-  kubernetes_cluster_log_categories = toset([
-    for type in data.azurerm_monitor_diagnostic_categories.kubernetes_cluster.log_category_types : type
-    if type != "kube-audit"
-  ])
-
-  # Set the metric categories.
-  kubernetes_cluster_metric_categories = data.azurerm_monitor_diagnostic_categories.kubernetes_cluster.metrics
-}
-
-# Create the Kubernetes cluster, including the default node pool.
+# Create the Kubernetes cluster, including the system node pool.
 resource "azurerm_kubernetes_cluster" "default" {
   name                   = "aks-${local.suffix}"
   location               = var.location
@@ -24,19 +8,29 @@ resource "azurerm_kubernetes_cluster" "default" {
   sku_tier               = var.kubernetes_cluster_sku_tier
   azure_policy_enabled   = true
   disk_encryption_set_id = azurerm_disk_encryption_set.default.id
+  local_account_disabled = true
+
+  network_profile {
+    network_plugin = "azure"
+    network_policy = "azure"
+  }
 
   default_node_pool {
-    name                = "default"
-    vm_size             = var.kubernetes_cluster_vm_size
-    vnet_subnet_id      = azurerm_subnet.aks.id
-    zones               = ["1", "2", "3"]
-    enable_auto_scaling = true
-    min_count           = 3
-    max_count           = 9
+    name                         = "system"
+    vm_size                      = var.kubernetes_cluster_node_pool_system_vm_size
+    vnet_subnet_id               = azurerm_subnet.aks.id
+    zones                        = ["1", "2", "3"]
+    only_critical_addons_enabled = true
+    node_count                   = 3
 
     upgrade_settings {
-      max_surge = "25%"
+      max_surge = "1"
     }
+  }
+
+  azure_active_directory_role_based_access_control {
+    managed            = true
+    azure_rbac_enabled = true
   }
 
   identity {
@@ -55,59 +49,27 @@ resource "azurerm_kubernetes_cluster" "default" {
   microsoft_defender {
     log_analytics_workspace_id = azurerm_log_analytics_workspace.default.id
   }
-
-  depends_on = [
-    azurerm_role_assignment.subnet,
-    azurerm_role_assignment.route_table
-  ]
 }
 
-# Create the default diagnostic setting, excluding the kube-audit logs.
-resource "azurerm_monitor_diagnostic_setting" "kubernetes_cluster_default" {
-  name                           = "default"
-  target_resource_id             = azurerm_kubernetes_cluster.default.id
-  log_analytics_workspace_id     = azurerm_log_analytics_workspace.default.id
-  log_analytics_destination_type = "Dedicated"
+# Create the standard node pool.
+resource "azurerm_kubernetes_cluster_node_pool" "standard" {
+  name                  = "standard"
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.default.id
+  vm_size               = var.kubernetes_cluster_node_pool_standard_vm_size
+  vnet_subnet_id        = azurerm_subnet.aks.id
+  zones                 = ["1", "2", "3"]
+  enable_auto_scaling   = true
+  min_count             = 3
+  max_count             = 9
 
-  dynamic "enabled_log" {
-    for_each = local.kubernetes_cluster_log_categories
-
-    content {
-      category = enabled_log.key
-    }
-  }
-
-  dynamic "metric" {
-    for_each = local.kubernetes_cluster_metric_categories
-
-    content {
-      category = metric.key
-      enabled  = false
-    }
+  upgrade_settings {
+    max_surge = "1"
   }
 }
 
-# Create the kube-audit diagnostic setting.
-resource "azurerm_monitor_diagnostic_setting" "kubernetes_cluster_kube_audit" {
-  name               = "kube-audit"
-  target_resource_id = azurerm_kubernetes_cluster.default.id
-  storage_account_id = azurerm_storage_account.logs.id
-
-  enabled_log {
-    category = "kube-audit"
-
-    retention_policy {
-      enabled = true
-      days    = 30
-    }
-  }
-
-  dynamic "metric" {
-    for_each = local.kubernetes_cluster_metric_categories
-
-    content {
-      category = metric.key
-      enabled  = false
-    }
-  }
+# Assign the cluster admin role to the current user.
+resource "azurerm_role_assignment" "cluster_admin" {
+  scope                = azurerm_kubernetes_cluster.default.id
+  role_definition_name = "Azure Kubernetes Service RBAC Cluster Admin"
+  principal_id         = data.azurerm_client_config.current.object_id
 }

@@ -4,12 +4,14 @@ terraform {
       version = ">= 3.43"
     }
     random = {
-      source  = "hashicorp/random"
       version = ">= 3.4"
     }
     http = {
-      source  = "hashicorp/http"
       version = ">= 3.2"
+    }
+    azapi = {
+      source  = "azure/azapi"
+      version = ">= 1.5"
     }
   }
 
@@ -27,6 +29,9 @@ provider "azurerm" {
       prevent_deletion_if_contains_resources = false
     }
   }
+}
+
+provider "azapi" {
 }
 
 data "azurerm_client_config" "current" {}
@@ -114,4 +119,11 @@ resource "azurerm_disk_encryption_set" "default" {
   }
 
   depends_on = [azurerm_key_vault_access_policy.disk_encryption_set]
+}
+
+# Assign the contributor role for the Kubernetes cluster managed identity to the resource group.
+resource "azurerm_role_assignment" "kubernetes_cluster_resource_group_contributor" {
+  scope                = azurerm_resource_group.default.id
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_user_assigned_identity.kubernetes_cluster.principal_id
 }

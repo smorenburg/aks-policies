@@ -26,11 +26,17 @@ variable "environment" {
 variable "kubernetes_cluster_sku_tier" {
   description = "The SKU tier that should be used for the Kubernetes cluster."
   type        = string
-  default     = "Free"
+  default     = "Standard"
 }
 
-variable "kubernetes_cluster_vm_size" {
-  description = "The size of the virtual machines for the Kubernetes cluster."
+variable "kubernetes_cluster_node_pool_system_vm_size" {
+  description = "The size of the virtual machines for the system node pool."
+  type        = string
+  default     = "Standard_D2s_v5"
+}
+
+variable "kubernetes_cluster_node_pool_standard_vm_size" {
+  description = "The size of the virtual machines for the standard node pool."
   type        = string
   default     = "Standard_D2s_v5"
 }
