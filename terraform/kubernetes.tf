@@ -1,3 +1,10 @@
+# Create the managed identity for the Kubernetes cluster.
+resource "azurerm_user_assigned_identity" "kubernetes_cluster" {
+  name                = "id-aks-${local.suffix}"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.default.name
+}
+
 # Create the Kubernetes cluster, including the system node pool.
 resource "azurerm_kubernetes_cluster" "default" {
   name                   = "aks-${local.suffix}"
@@ -17,6 +24,7 @@ resource "azurerm_kubernetes_cluster" "default" {
   default_node_pool {
     name                         = "system"
     vm_size                      = var.kubernetes_cluster_node_pool_system_vm_size
+    temporary_name_for_rotation  = "temp"
     vnet_subnet_id               = azurerm_subnet.aks.id
     zones                        = ["1", "2", "3"]
     only_critical_addons_enabled = true
@@ -33,7 +41,8 @@ resource "azurerm_kubernetes_cluster" "default" {
   }
 
   identity {
-    type         = "SystemAssigned"
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.kubernetes_cluster.id]
   }
 
   api_server_access_profile {

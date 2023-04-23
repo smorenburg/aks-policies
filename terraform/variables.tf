@@ -32,11 +32,11 @@ variable "kubernetes_cluster_sku_tier" {
 variable "kubernetes_cluster_node_pool_system_vm_size" {
   description = "The size of the virtual machines for the system node pool."
   type        = string
-  default     = "Standard_D2s_v5"
+  default     = "Standard_D2ds_v5"
 }
 
 variable "kubernetes_cluster_node_pool_standard_vm_size" {
   description = "The size of the virtual machines for the standard node pool."
   type        = string
-  default     = "Standard_D2s_v5"
+  default     = "Standard_D2ds_v5"
 }
