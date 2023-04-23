@@ -1,1 +1,1 @@
-# AKS policies
+# AKS platform
