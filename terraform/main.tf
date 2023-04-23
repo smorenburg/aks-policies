@@ -58,16 +58,6 @@ locals {
   authorized_ip_ranges = ["${local.public_ip}/32"]
 }
 
-# Generate a random suffix for the logs storage account.
-resource "random_id" "storage_account" {
-  byte_length = 3
-}
-
-# Generate a random suffix for the key vault.
-resource "random_id" "key_vault" {
-  byte_length = 3
-}
-
 # Create the resource group.
 resource "azurerm_resource_group" "default" {
   name     = "rg-${local.suffix}"
@@ -80,50 +70,4 @@ resource "azurerm_log_analytics_workspace" "default" {
   location            = var.location
   resource_group_name = azurerm_resource_group.default.name
   retention_in_days   = 30
-}
-
-# Create the storage account for the logs.
-resource "azurerm_storage_account" "logs" {
-  name                     = "st${local.app}${var.environment}${random_id.storage_account.hex}"
-  location                 = var.location
-  resource_group_name      = azurerm_resource_group.default.name
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-}
-
-# Create the managed identity for the Kubernetes cluster.
-resource "azurerm_user_assigned_identity" "kubernetes_cluster" {
-  name                = "id-aks-${local.suffix}"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.default.name
-}
-
-# Create the managed identity for the disk encryption set.
-resource "azurerm_user_assigned_identity" "disk_encryption_set" {
-  name                = "id-des-${local.suffix}"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.default.name
-}
-
-# Create the disk encryption set.
-resource "azurerm_disk_encryption_set" "default" {
-  name                      = "des-${local.suffix}"
-  location                  = var.location
-  resource_group_name       = azurerm_resource_group.default.name
-  key_vault_key_id          = azurerm_key_vault_key.disk_encryption_set.id
-  auto_key_rotation_enabled = true
-
-  identity {
-    type         = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.disk_encryption_set.id]
-  }
-
-  depends_on = [azurerm_key_vault_access_policy.disk_encryption_set]
-}
-
-# Assign the contributor role for the Kubernetes cluster managed identity to the resource group.
-resource "azurerm_role_assignment" "kubernetes_cluster_resource_group_contributor" {
-  scope                = azurerm_resource_group.default.id
-  role_definition_name = "Contributor"
-  principal_id         = azurerm_user_assigned_identity.kubernetes_cluster.principal_id
 }

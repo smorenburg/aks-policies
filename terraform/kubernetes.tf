@@ -7,12 +7,11 @@ resource "azurerm_kubernetes_cluster" "default" {
   dns_prefix             = "aks-${local.suffix}"
   sku_tier               = var.kubernetes_cluster_sku_tier
   azure_policy_enabled   = true
-  disk_encryption_set_id = azurerm_disk_encryption_set.default.id
   local_account_disabled = true
 
   network_profile {
     network_plugin = "azure"
-    network_policy = "azure"
+    network_policy = "calico"
   }
 
   default_node_pool {
@@ -34,8 +33,7 @@ resource "azurerm_kubernetes_cluster" "default" {
   }
 
   identity {
-    type         = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.kubernetes_cluster.id]
+    type         = "SystemAssigned"
   }
 
   api_server_access_profile {
