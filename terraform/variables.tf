@@ -41,14 +41,14 @@ variable "kubernetes_cluster_node_pool_system_os_disk_size_gb" {
   default     = 150
 }
 
-variable "kubernetes_cluster_node_pool_standard_vm_size" {
-  description = "The size of the virtual machines for the standard node pool."
+variable "kubernetes_cluster_node_pool_user_vm_size" {
+  description = "The size of the virtual machines for the user node pool."
   type        = string
   default     = "Standard_D4ds_v5"
 }
 
-variable "kubernetes_cluster_node_pool_standard_os_disk_size_gb" {
-  description = "The size of the OS disk for the standard node pool."
+variable "kubernetes_cluster_node_pool_user_os_disk_size_gb" {
+  description = "The size of the OS disk for the user node pool."
   type        = number
   default     = 150
 }

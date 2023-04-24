@@ -61,11 +61,11 @@ resource "azurerm_kubernetes_cluster" "default" {
 }
 
 # Create the standard node pool.
-resource "azurerm_kubernetes_cluster_node_pool" "standard" {
-  name                  = "standard"
+resource "azurerm_kubernetes_cluster_node_pool" "user" {
+  name                  = "user"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.default.id
-  vm_size               = var.kubernetes_cluster_node_pool_standard_vm_size
-  os_disk_size_gb       = var.kubernetes_cluster_node_pool_standard_os_disk_size_gb
+  vm_size               = var.kubernetes_cluster_node_pool_user_vm_size
+  os_disk_size_gb       = var.kubernetes_cluster_node_pool_user_os_disk_size_gb
   os_disk_type          = "Ephemeral"
   vnet_subnet_id        = azurerm_subnet.aks.id
   zones                 = ["1", "2", "3"]
