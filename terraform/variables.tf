@@ -7,7 +7,7 @@ variable "location" {
 variable "location_abbreviation" {
   description = "The abbreviation of the location."
   type        = map(string)
-  default = {
+  default     = {
     "westeurope"  = "weu"
     "northeurope" = "neu"
     "eastus"      = "eus"
@@ -32,11 +32,23 @@ variable "kubernetes_cluster_sku_tier" {
 variable "kubernetes_cluster_node_pool_system_vm_size" {
   description = "The size of the virtual machines for the system node pool."
   type        = string
-  default     = "Standard_D2ds_v5"
+  default     = "Standard_D4ds_v5"
+}
+
+variable "kubernetes_cluster_node_pool_system_os_disk_size_gb" {
+  description = "The size of the OS disk for the system node pool."
+  type        = number
+  default     = 150
 }
 
 variable "kubernetes_cluster_node_pool_standard_vm_size" {
   description = "The size of the virtual machines for the standard node pool."
   type        = string
-  default     = "Standard_D2ds_v5"
+  default     = "Standard_D4ds_v5"
+}
+
+variable "kubernetes_cluster_node_pool_standard_os_disk_size_gb" {
+  description = "The size of the OS disk for the standard node pool."
+  type        = number
+  default     = 150
 }

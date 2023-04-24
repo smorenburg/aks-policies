@@ -24,10 +24,12 @@ resource "azurerm_kubernetes_cluster" "default" {
   default_node_pool {
     name                         = "system"
     vm_size                      = var.kubernetes_cluster_node_pool_system_vm_size
+    os_disk_size_gb              = var.kubernetes_cluster_node_pool_system_os_disk_size_gb
+    os_disk_type                 = "Ephemeral"
+    only_critical_addons_enabled = true
     temporary_name_for_rotation  = "temp"
     vnet_subnet_id               = azurerm_subnet.aks.id
     zones                        = ["1", "2", "3"]
-    only_critical_addons_enabled = true
     node_count                   = 3
 
     upgrade_settings {
@@ -63,6 +65,8 @@ resource "azurerm_kubernetes_cluster_node_pool" "standard" {
   name                  = "standard"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.default.id
   vm_size               = var.kubernetes_cluster_node_pool_standard_vm_size
+  os_disk_size_gb       = var.kubernetes_cluster_node_pool_standard_os_disk_size_gb
+  os_disk_type          = "Ephemeral"
   vnet_subnet_id        = azurerm_subnet.aks.id
   zones                 = ["1", "2", "3"]
   enable_auto_scaling   = true
