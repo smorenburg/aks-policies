@@ -16,8 +16,8 @@ terraform {
   }
 
   backend "azurerm" {
-    resource_group_name  = "rg-tfstate-orion-weu"
-    storage_account_name = "storionfecb5d"
+    resource_group_name  = "rg-astro-weu"
+    storage_account_name = "stastrofecb5d"
     container_name       = "tfstate"
     key                  = "dev.tfstate"
   }
@@ -43,7 +43,7 @@ data "http" "public_ip" {
 
 locals {
   # Set the application name
-  app = "orion"
+  app = "astro"
 
   # Lookup and set the location abbreviation, defaults to na (not available).
   location_abbreviation = try(var.location_abbreviation[var.location], "na")
