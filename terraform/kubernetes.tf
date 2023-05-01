@@ -7,14 +7,15 @@ resource "azurerm_user_assigned_identity" "kubernetes_cluster" {
 
 # Create the Kubernetes cluster, including the system node pool.
 resource "azurerm_kubernetes_cluster" "default" {
-  name                   = "aks-${local.suffix}"
-  location               = var.location
-  resource_group_name    = azurerm_resource_group.default.name
-  node_resource_group    = "rg-aks-${local.suffix}"
-  dns_prefix             = "aks-${local.suffix}"
-  sku_tier               = var.kubernetes_cluster_sku_tier
-  azure_policy_enabled   = true
-  local_account_disabled = true
+  name                      = "aks-${local.suffix}"
+  location                  = var.location
+  resource_group_name       = azurerm_resource_group.default.name
+  node_resource_group       = "rg-aks-${local.suffix}"
+  dns_prefix                = "aks-${local.suffix}"
+  sku_tier                  = var.kubernetes_cluster_sku_tier
+  azure_policy_enabled      = true
+  local_account_disabled    = true
+  automatic_channel_upgrade = "patch"
 
   network_profile {
     network_plugin = "azure"
@@ -49,6 +50,10 @@ resource "azurerm_kubernetes_cluster" "default" {
 
   api_server_access_profile {
     authorized_ip_ranges = local.authorized_ip_ranges
+  }
+
+  key_vault_secrets_provider {
+    secret_rotation_enabled = true
   }
 
   oms_agent {
