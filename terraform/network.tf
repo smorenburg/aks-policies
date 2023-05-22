@@ -26,3 +26,10 @@ resource "azurerm_subnet_network_security_group_association" "aks" {
   subnet_id                 = azurerm_subnet.aks.id
   network_security_group_id = azurerm_network_security_group.aks.id
 }
+
+# Assign the 'Network Contributor' role for the managed identity to the subnet.
+resource "azurerm_role_assignment" "subnet" {
+  scope                = azurerm_subnet.aks.id
+  role_definition_name = "Network Contributor"
+  principal_id         = azurerm_user_assigned_identity.kubernetes_cluster.principal_id
+}
