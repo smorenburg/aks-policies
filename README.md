@@ -69,10 +69,26 @@ cd ../environment && \
 terraform apply -auto-approve
 ```
 
-**Step 5:** Destroy the resources for each section.
+**Step 5:** Install the Radius (rad) CLI.
 
 ```bash
-cd ../shared && \
+curl -fsSL "https://raw.githubusercontent.com/radius-project/radius/main/deploy/install.sh" | /bin/bash
+```
+
+**Step 6:** Connect to the cluster.
+
+**Step 7:** Initialize Radius
+
+```bash
+rad init
+```
+
+## Destroying the resources.
+
+**Step 1:** Destroy the resources for each section.
+
+```bash
+cd terraform/shared && \
 terraform destroy -auto-approve
 ```
 
