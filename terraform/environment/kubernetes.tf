@@ -89,3 +89,21 @@ resource "azurerm_role_assignment" "cluster_admin" {
   role_definition_name = "Azure Kubernetes Service RBAC Cluster Admin"
   principal_id         = data.azurerm_client_config.current.object_id
 }
+
+# Assign the 'AcrPull' role for the managed identity to the container registry.
+resource "azurerm_role_assignment" "container_registry" {
+  scope                = data.terraform_remote_state.shared.outputs.container_registry_id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_user_assigned_identity.kubernetes_cluster.principal_id
+}
+
+# Install the Flux extension.
+resource "azurerm_kubernetes_cluster_extension" "flux" {
+  name           = "flux"
+  cluster_id     = azurerm_kubernetes_cluster.default.id
+  extension_type = "microsoft.flux"
+
+  depends_on = [
+    azurerm_kubernetes_cluster_node_pool.user
+  ]
+}

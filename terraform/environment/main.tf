@@ -9,17 +9,10 @@ terraform {
     http = {
       version = ">= 3.2"
     }
-    azapi = {
-      source  = "azure/azapi"
-      version = ">= 1.5"
-    }
   }
 
   backend "azurerm" {
-    resource_group_name  = "rg-astro-weu"
-    storage_account_name = "stastrofecb5d"
-    container_name       = "tfstate"
-    key                  = "dev.tfstate"
+    container_name = "tfstate"
   }
 }
 
@@ -31,10 +24,19 @@ provider "azurerm" {
   }
 }
 
-provider "azapi" {
-}
-
 data "azurerm_client_config" "current" {}
+
+# Configure the Terraform remote state backend.
+data "terraform_remote_state" "shared" {
+  backend = "azurerm"
+
+  config = {
+    storage_account_name = var.storage_account
+    resource_group_name  = var.resource_group
+    container_name       = "tfstate"
+    key                  = "shared.${var.location}.tfstate"
+  }
+}
 
 # Get the public IP address
 data "http" "public_ip" {
@@ -42,14 +44,11 @@ data "http" "public_ip" {
 }
 
 locals {
-  # Set the application name
-  app = "astro"
-
   # Lookup and set the location abbreviation, defaults to na (not available).
   location_abbreviation = try(var.location_abbreviation[var.location], "na")
 
   # Construct the name suffix.
-  suffix = "${local.app}-${var.environment}-${local.location_abbreviation}"
+  suffix = "${var.app}-${var.environment}-${local.location_abbreviation}"
 
   # Clean and set the public IP address
   public_ip = chomp(data.http.public_ip.response_body)
