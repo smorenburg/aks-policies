@@ -34,7 +34,7 @@ data "terraform_remote_state" "shared" {
     storage_account_name = var.storage_account
     resource_group_name  = var.resource_group
     container_name       = "tfstate"
-    key                  = "shared.${var.location}.tfstate"
+    key                  = "${var.location}.tfstate"
   }
 }
 

@@ -28,7 +28,7 @@ locals {
   location_abbreviation = try(var.location_abbreviation[var.location], "na")
 
   # Construct the name suffix.
-  suffix = "${var.app}-shared-${local.location_abbreviation}"
+  suffix = "${var.app}-${local.location_abbreviation}"
 }
 
 # Generate a random suffix for the container registry.

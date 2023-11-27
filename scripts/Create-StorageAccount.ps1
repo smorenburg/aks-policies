@@ -1,5 +1,5 @@
 # Set the variables
-$resourceGroupName = "rg-astro-tfstate-neu"
+$resourceGroupName = "rg-tfstate-astro-neu"
 $location = "northeurope"
 $storageAccountSuffix = "stastro"
 $random = (Get-Random -Minimum 0 -Maximum 99999).ToString('000000')

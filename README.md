@@ -9,7 +9,7 @@ Connect-AzAccount
 ```
 
 ```powershell
-Set-AzContext <subscriptionID>
+Set-AzContext "subscriptionID"
 ```
 
 **Step 2:** Create the storage account for the Terraform state. Copy the storage account name.
@@ -21,14 +21,14 @@ Set-AzContext <subscriptionID>
 **Step 3:** Set the variables. Replace `storageAccount` with the storage account name.
 
 ```bash
-export STORAGE_ACCOUNT=<storageAccount>
+export STORAGE_ACCOUNT="storageAccount"
 ````
 
 ```bash
 export APP="astro"
 export LOCATION="northeurope"
 export ENVIRONMENT="dev"
-export RESOURCE_GROUP="rg-astro-tfstate-neu"
+export RESOURCE_GROUP="rg-tfstate-astro-neu"
 ````
 
 ```bash
@@ -46,7 +46,7 @@ cd terraform/shared && \
 terraform init \
   -backend-config="storage_account_name=$STORAGE_ACCOUNT" \
   -backend-config="resource_group_name=$RESOURCE_GROUP" \
-  -backend-config="key=shared.$LOCATION.tfstate"
+  -backend-config="key=$LOCATION.tfstate"
 ````
 
 ```bash
@@ -62,7 +62,6 @@ terraform init \
 ```bash
 cd ../shared && \
 terraform apply -auto-approve
-
 ```
 
 ```bash
