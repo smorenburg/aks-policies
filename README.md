@@ -88,11 +88,11 @@ rad install kubernetes
 **Step 1:** Destroy the resources for each section.
 
 ```bash
-cd terraform/shared && \
+cd terraform/environment && \
 terraform destroy -auto-approve
 ```
 
 ```bash
-cd ../environment && \
+cd ../shared && \
 terraform destroy -auto-approve
 ```
