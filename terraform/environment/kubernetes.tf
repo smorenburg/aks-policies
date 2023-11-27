@@ -31,7 +31,9 @@ resource "azurerm_kubernetes_cluster" "default" {
     temporary_name_for_rotation  = "temp"
     vnet_subnet_id               = azurerm_subnet.aks.id
     zones                        = ["1", "2", "3"]
-    node_count                   = 3
+    enable_auto_scaling          = true
+    min_count                    = 3
+    max_count                    = 9
 
     upgrade_settings {
       max_surge = "1"
@@ -102,6 +104,10 @@ resource "azurerm_kubernetes_cluster_extension" "flux" {
   name           = "flux"
   cluster_id     = azurerm_kubernetes_cluster.default.id
   extension_type = "microsoft.flux"
+
+  configuration_settings = {
+    toleration-keys = "CriticalAddonsOnly=true:NoSchedule"
+  }
 
   depends_on = [
     azurerm_kubernetes_cluster_node_pool.user
