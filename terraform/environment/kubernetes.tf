@@ -101,12 +101,13 @@ resource "azurerm_role_assignment" "container_registry" {
 
 # Install the Flux extension.
 resource "azurerm_kubernetes_cluster_extension" "flux" {
+  count          = var.install_flux ? 1 : 0
   name           = "flux"
   cluster_id     = azurerm_kubernetes_cluster.default.id
   extension_type = "microsoft.flux"
 
   configuration_settings = {
-    toleration-keys = "CriticalAddonsOnly=true:NoSchedule"
+    "toleration-keys"      = "CriticalAddonsOnly=true:NoSchedule"
   }
 
   depends_on = [

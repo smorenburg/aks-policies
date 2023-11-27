@@ -36,6 +36,12 @@ variable "storage_account" {
   type        = string
 }
 
+variable "install_flux" {
+  type        = bool
+  description = "Optional. When set to 'true', The Flux cluster extention is installed."
+  default     = false
+}
+
 variable "kubernetes_cluster_sku_tier" {
   description = "Optional. The SKU tier that should be used for the Kubernetes cluster."
   type        = string
