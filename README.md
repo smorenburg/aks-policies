@@ -18,7 +18,7 @@ Set-AzContext <subscriptionID>
 ./scripts/Create-StorageAccount.ps1
 ```
 
-**Step 3:** Set the environment variables. Replace `storageAccount` with the storage account name.
+**Step 3:** Set the variables. Replace `storageAccount` with the storage account name.
 
 ```bash
 export STORAGE_ACCOUNT=<storageAccount>
