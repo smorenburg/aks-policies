@@ -9,7 +9,7 @@ Connect-AzAccount
 ```
 
 ```powershell
-Set-AzContext "subscriptionID"
+Set-AzContext <subscriptionID>
 ```
 
 **Step 2:** Create the storage account for the Terraform state. Copy the storage account name.
@@ -18,10 +18,10 @@ Set-AzContext "subscriptionID"
 ./scripts/Create-StorageAccount.ps1
 ```
 
-**Step 3:** Set the variables. Replace `storageAccount` with the storage account name.
+**Step 3:** Set the variables. Replace `storage_account` with the storage account name.
 
 ```bash
-export STORAGE_ACCOUNT="storageAccount"
+export STORAGE_ACCOUNT=<storage_account>
 ````
 
 ```bash
@@ -32,11 +32,11 @@ export RESOURCE_GROUP="rg-tfstate-astro-neu"
 ````
 
 ```bash
-export TF_VAR_app=$APP
-export TF_VAR_location=$LOCATION
-export TF_VAR_environment=$ENVIRONMENT
-export TF_VAR_resource_group=$RESOURCE_GROUP
-export TF_VAR_storage_account=$STORAGE_ACCOUNT
+export TF_VAR_app=${APP}
+export TF_VAR_location=${LOCATION}
+export TF_VAR_environment=${ENVIRONMENT}
+export TF_VAR_resource_group=${RESOURCE_GROUP}
+export TF_VAR_storage_account=${STORAGE_ACCOUNT}
 ```
 
 **Step 4:** Initialize Terraform for each section.
@@ -44,17 +44,17 @@ export TF_VAR_storage_account=$STORAGE_ACCOUNT
 ```bash
 cd terraform/shared && \
 terraform init \
-  -backend-config="storage_account_name=$STORAGE_ACCOUNT" \
-  -backend-config="resource_group_name=$RESOURCE_GROUP" \
-  -backend-config="key=$LOCATION.tfstate"
+  -backend-config="storage_account_name=${STORAGE_ACCOUNT}" \
+  -backend-config="resource_group_name=${RESOURCE_GROUP}" \
+  -backend-config="key=${LOCATION}.tfstate"
 ````
 
 ```bash
 cd ../environment && \
 terraform init \
-  -backend-config="storage_account_name=$STORAGE_ACCOUNT" \
-  -backend-config="resource_group_name=$RESOURCE_GROUP" \
-  -backend-config="key=$ENVIRONMENT.$LOCATION.tfstate"
+  -backend-config="storage_account_name=${STORAGE_ACCOUNT}" \
+  -backend-config="resource_group_name=${RESOURCE_GROUP}" \
+  -backend-config="key=${ENVIRONMENT}.${LOCATION}.tfstate"
 ````
 
 **Step 5:** Deploy the resources for each section.
