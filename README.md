@@ -77,10 +77,10 @@ curl -fsSL "https://raw.githubusercontent.com/radius-project/radius/main/deploy/
 
 **Step 6:** Connect to the cluster.
 
-**Step 7:** Initialize Radius
+**Step 7:** Install Radius
 
 ```bash
-rad init
+rad install kubernetes
 ```
 
 ## Destroying the resources.
