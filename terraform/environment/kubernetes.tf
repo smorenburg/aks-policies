@@ -16,6 +16,7 @@ resource "azurerm_kubernetes_cluster" "default" {
   azure_policy_enabled      = true
   local_account_disabled    = true
   automatic_channel_upgrade = "patch"
+  oidc_issuer_enabled       = true
 
   network_profile {
     network_plugin = "azure"
@@ -107,7 +108,7 @@ resource "azurerm_kubernetes_cluster_extension" "flux" {
   extension_type = "microsoft.flux"
 
   configuration_settings = {
-    "toleration-keys"      = "CriticalAddonsOnly=true:NoSchedule"
+    "toleration-keys" = "CriticalAddonsOnly=true:NoSchedule"
   }
 
   depends_on = [
