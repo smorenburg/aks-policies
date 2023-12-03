@@ -48,7 +48,7 @@ variable "storage_account" {
 
 variable "install_flux" {
   type        = bool
-  description = "Optional. When set to 'true', The Flux cluster extention is installed."
+  description = "Optional. When set to 'true', The Flux cluster extension is installed."
   default     = false
 }
 

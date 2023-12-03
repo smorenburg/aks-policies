@@ -94,7 +94,7 @@ resource "azurerm_role_assignment" "container_registry" {
   principal_id         = azurerm_user_assigned_identity.kubernetes_cluster.principal_id
 }
 
-# Install the Flux extension.
+# Install the Flux cluster extension.
 resource "azurerm_kubernetes_cluster_extension" "flux" {
   count          = var.install_flux ? 1 : 0
   name           = "flux"

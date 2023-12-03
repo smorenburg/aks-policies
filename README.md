@@ -83,6 +83,26 @@ curl -fsSL "https://raw.githubusercontent.com/radius-project/radius/main/deploy/
 rad install kubernetes
 ```
 
+**Step 8:** Create a GitHub personal access token with the `repo` scope.
+
+**Step 9:** Set the variables. Replace `gh_token` with the personal access token.
+
+```bash
+export GITHUB_TOKEN=<gh_token>
+````
+
+**Step 10:** Bootstrap Flux.
+
+```bash
+flux bootstrap github \
+  --owner=smorenburg \
+  --repository=astro-source \
+  --branch=main \
+  --path=clusters/staging \
+  --personal \
+  --private=false
+```
+
 ## Destroying the resources.
 
 **Step 1:** Destroy the resources for each section.
