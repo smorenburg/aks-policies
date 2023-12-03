@@ -33,3 +33,18 @@ resource "azurerm_role_assignment" "subnet" {
   role_definition_name = "Network Contributor"
   principal_id         = azurerm_user_assigned_identity.kubernetes_cluster.principal_id
 }
+
+# Create the security rule for inbound web traffic from any source.
+resource "azurerm_network_security_rule" "allow_any_web_inbound" {
+  name                        = "AllowAnyWebInbound"
+  priority                    = 100
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_ranges      = ["80", "443"]
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.default.name
+  network_security_group_name = azurerm_network_security_group.aks.name
+}
