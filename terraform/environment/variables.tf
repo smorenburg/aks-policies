@@ -9,7 +9,7 @@ variable "location" {
 }
 
 variable "location_abbreviation" {
-  description = "Required. The abbreviation of the location."
+  description = "Optional. The abbreviation of the location."
   type        = map(string)
   default     = {
     "westeurope"  = "weu"
@@ -27,7 +27,7 @@ variable "environment" {
 }
 
 variable "environment_abbreviation" {
-  description = "Required. The abbreviation of the environment."
+  description = "Optional. The abbreviation of the environment."
   type        = map(string)
   default     = {
     "development" = "dev"
