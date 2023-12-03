@@ -91,7 +91,7 @@ brew install fluxcd/tap/flux
 
 **Step 9:** Create a GitHub personal access token with the `repo` scope.
 
-**Step 10:** Set the variables. Replace `gh_token` with the personal access token.
+**Step 10:** Set the variable. Replace `gh_token` with the personal access token.
 
 ```bash
 export GITHUB_TOKEN=<gh_token>
