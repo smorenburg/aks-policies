@@ -26,6 +26,16 @@ variable "environment" {
   type        = string
 }
 
+variable "environment_abbreviation" {
+  description = "Required. The abbreviation of the environment."
+  type        = map(string)
+  default     = {
+    "development" = "dev"
+    "staging"     = "stage"
+    "production"  = "prod"
+  }
+}
+
 variable "resource_group" {
   description = "Required. The name of the resource group containing the storage account including the Terraform state."
   type        = string

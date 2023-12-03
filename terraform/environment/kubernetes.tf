@@ -1,10 +1,3 @@
-# Create the managed identity for the Kubernetes cluster.
-resource "azurerm_user_assigned_identity" "kubernetes_cluster" {
-  name                = "id-aks-${local.suffix}"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.default.name
-}
-
 # Create the Kubernetes cluster, including the system node pool.
 resource "azurerm_kubernetes_cluster" "default" {
   name                      = "aks-${local.suffix}"
@@ -13,6 +6,7 @@ resource "azurerm_kubernetes_cluster" "default" {
   node_resource_group       = "rg-aks-${local.suffix}"
   dns_prefix                = "aks-${local.suffix}"
   sku_tier                  = var.kubernetes_cluster_sku_tier
+  disk_encryption_set_id    = azurerm_disk_encryption_set.default.id
   azure_policy_enabled      = true
   local_account_disabled    = true
   automatic_channel_upgrade = "patch"
@@ -60,11 +54,11 @@ resource "azurerm_kubernetes_cluster" "default" {
   }
 
   oms_agent {
-    log_analytics_workspace_id = azurerm_log_analytics_workspace.default.id
+    log_analytics_workspace_id = data.terraform_remote_state.shared.outputs.log_analytics_workspace_id
   }
 
   microsoft_defender {
-    log_analytics_workspace_id = azurerm_log_analytics_workspace.default.id
+    log_analytics_workspace_id = data.terraform_remote_state.shared.outputs.log_analytics_workspace_id
   }
 }
 

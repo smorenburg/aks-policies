@@ -47,8 +47,11 @@ locals {
   # Lookup and set the location abbreviation, defaults to na (not available).
   location_abbreviation = try(var.location_abbreviation[var.location], "na")
 
+  # Lookup and set the environment abbreviation, defaults to na (not available).
+  environment_abbreviation = try(var.environment_abbreviation[var.environment], "na")
+
   # Construct the name suffix.
-  suffix = "${var.app}-${var.environment}-${local.location_abbreviation}"
+  suffix = "${var.app}-${local.environment_abbreviation}-${local.location_abbreviation}"
 
   # Clean and set the public IP address
   public_ip = chomp(data.http.public_ip.response_body)
@@ -57,16 +60,43 @@ locals {
   authorized_ip_ranges = ["${local.public_ip}/32"]
 }
 
+# Generate a random suffix for the key vault.
+resource "random_id" "key_vault" {
+  byte_length = 3
+}
+
 # Create the resource group.
 resource "azurerm_resource_group" "default" {
   name     = "rg-${local.suffix}"
   location = var.location
 }
 
-# Create the Log Analytics workspace.
-resource "azurerm_log_analytics_workspace" "default" {
-  name                = "log-${local.suffix}"
+# Create the managed identity for the Kubernetes cluster.
+resource "azurerm_user_assigned_identity" "kubernetes_cluster" {
+  name                = "id-aks-${local.suffix}"
   location            = var.location
   resource_group_name = azurerm_resource_group.default.name
-  retention_in_days   = 30
+}
+
+# Create the managed identity for the disk encryption set.
+resource "azurerm_user_assigned_identity" "disk_encryption_set" {
+  name                = "id-des-${local.suffix}"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.default.name
+}
+
+# Create the disk encryption set.
+resource "azurerm_disk_encryption_set" "default" {
+  name                      = "des-${local.suffix}"
+  location                  = var.location
+  resource_group_name       = azurerm_resource_group.default.name
+  key_vault_key_id          = azurerm_key_vault_key.disk_encryption_set.versionless_id
+  auto_key_rotation_enabled = true
+
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.disk_encryption_set.id]
+  }
+
+  depends_on = [azurerm_key_vault_access_policy.disk_encryption_set]
 }
