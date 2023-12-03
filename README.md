@@ -27,7 +27,7 @@ export STORAGE_ACCOUNT=<storage_account>
 ```bash
 export APP="astro"
 export LOCATION="northeurope"
-export ENVIRONMENT="dev"
+export ENVIRONMENT="staging"
 export RESOURCE_GROUP="rg-tfstate-astro-neu"
 ````
 
