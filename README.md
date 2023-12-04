@@ -109,7 +109,7 @@ flux bootstrap github \
   --private=false
 ```
 
-## Destroying the resources.
+## Destroying the resources
 
 **Step 1:** Destroy the resources for each section.
 
