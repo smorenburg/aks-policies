@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     azurerm = {
-      version = ">= 3.43"
+      version = ">= 3.84"
     }
     random = {
       version = ">= 3.4"
@@ -83,6 +83,22 @@ resource "azurerm_user_assigned_identity" "disk_encryption_set" {
   name                = "id-des-${local.suffix}"
   location            = var.location
   resource_group_name = azurerm_resource_group.default.name
+}
+
+# Create the managed identity for the tf-runner, part of the tf-controller.
+resource "azurerm_user_assigned_identity" "tf_runner" {
+  name                = "id-tf-${local.suffix}"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.default.name
+}
+
+resource "azurerm_federated_identity_credential" "tf_runner" {
+  name                = "fc-tf-${local.suffix}"
+  resource_group_name = azurerm_resource_group.default.name
+  audience            = ["api://AzureADTokenExchange"]
+  issuer              = azurerm_kubernetes_cluster.default.oidc_issuer_url
+  parent_id           = azurerm_user_assigned_identity.tf_runner.id
+  subject             = "system:serviceaccount:flux-system:tf-runner"
 }
 
 # Create the disk encryption set.
