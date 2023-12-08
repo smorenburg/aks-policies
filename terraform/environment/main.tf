@@ -4,10 +4,10 @@ terraform {
       version = ">= 3.84"
     }
     random = {
-      version = ">= 3.4"
+      version = ">= 3.6"
     }
     http = {
-      version = ">= 3.2"
+      version = ">= 3.4"
     }
   }
 
