@@ -11,6 +11,7 @@ resource "azurerm_kubernetes_cluster" "default" {
   local_account_disabled    = true
   automatic_channel_upgrade = "patch"
   oidc_issuer_enabled       = true
+  workload_identity_enabled = true
 
   network_profile {
     network_plugin = "azure"
