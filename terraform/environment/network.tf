@@ -27,17 +27,17 @@ resource "azurerm_subnet_network_security_group_association" "aks" {
   network_security_group_id = azurerm_network_security_group.aks.id
 }
 
-# Create the security rule for inbound web traffic from any source.
+# Create the security rule for inbound web traffic.
 resource "azurerm_network_security_rule" "allow_any_web_inbound" {
-  name                        = "AllowAnyWebInbound"
+  name                        = "AllowInternetWebInbound"
   priority                    = 100
   direction                   = "Inbound"
   access                      = "Allow"
   protocol                    = "Tcp"
   source_port_range           = "*"
   destination_port_ranges     = ["80", "443"]
-  source_address_prefix       = "*"
-  destination_address_prefix  = "*"
+  source_address_prefix       = "Internet"
+  destination_address_prefix  = try(local.nginx_ip_addresses[local.environment_abbreviation], "*")
   resource_group_name         = azurerm_resource_group.default.name
   network_security_group_name = azurerm_network_security_group.aks.name
 }
