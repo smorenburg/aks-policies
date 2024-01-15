@@ -46,6 +46,12 @@ resource "azurerm_kubernetes_cluster" "default" {
     identity_ids = [azurerm_user_assigned_identity.kubernetes_cluster.id]
   }
 
+  kubelet_identity {
+    client_id                 = azurerm_user_assigned_identity.kubernetes_cluster.client_id
+    object_id                 = azurerm_user_assigned_identity.kubernetes_cluster.principal_id
+    user_assigned_identity_id = azurerm_user_assigned_identity.kubernetes_cluster.id
+  }
+
   api_server_access_profile {
     authorized_ip_ranges = local.authorized_ip_ranges
   }
@@ -79,20 +85,6 @@ resource "azurerm_kubernetes_cluster_node_pool" "user" {
   upgrade_settings {
     max_surge = "1"
   }
-}
-
-# Assign the cluster admin role to the current user.
-resource "azurerm_role_assignment" "cluster_admin" {
-  scope                = azurerm_kubernetes_cluster.default.id
-  role_definition_name = "Azure Kubernetes Service RBAC Cluster Admin"
-  principal_id         = data.azurerm_client_config.current.object_id
-}
-
-# Assign the 'AcrPull' role for the managed identity to the container registry.
-resource "azurerm_role_assignment" "container_registry" {
-  scope                = data.terraform_remote_state.shared.outputs.container_registry_id
-  role_definition_name = "AcrPull"
-  principal_id         = azurerm_user_assigned_identity.kubernetes_cluster.principal_id
 }
 
 # Install the Flux cluster extension.

@@ -27,13 +27,6 @@ resource "azurerm_subnet_network_security_group_association" "aks" {
   network_security_group_id = azurerm_network_security_group.aks.id
 }
 
-# Assign the 'Network Contributor' role for the managed identity to the subnet.
-resource "azurerm_role_assignment" "subnet" {
-  scope                = azurerm_subnet.aks.id
-  role_definition_name = "Network Contributor"
-  principal_id         = azurerm_user_assigned_identity.kubernetes_cluster.principal_id
-}
-
 # Create the security rule for inbound web traffic from any source.
 resource "azurerm_network_security_rule" "allow_any_web_inbound" {
   name                        = "AllowAnyWebInbound"
@@ -42,7 +35,7 @@ resource "azurerm_network_security_rule" "allow_any_web_inbound" {
   access                      = "Allow"
   protocol                    = "Tcp"
   source_port_range           = "*"
-  destination_port_ranges      = ["80", "443"]
+  destination_port_ranges     = ["80", "443"]
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
   resource_group_name         = azurerm_resource_group.default.name

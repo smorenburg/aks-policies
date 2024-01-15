@@ -27,7 +27,7 @@ export STORAGE_ACCOUNT=<storage_account>
 ```bash
 export APP="astro"
 export LOCATION="northeurope"
-export ENVIRONMENT="staging"
+export ENVIRONMENT="production"
 export RESOURCE_GROUP="rg-tfstate-astro-neu"
 ````
 
@@ -69,42 +69,30 @@ cd ../environment && \
 terraform apply -auto-approve
 ```
 
-**Step 5:** Install the Radius (rad) CLI.
-
-```bash
-curl -fsSL "https://raw.githubusercontent.com/radius-project/radius/main/deploy/install.sh" | /bin/bash
-```
-
 **Step 6:** Connect to the cluster.
 
-**Step 7:** Install Radius.
-
-```bash
-rad install kubernetes
-```
-
-**Step 8:** Install the Flux CLI.
+**Step 7:** Install the Flux CLI.
 
 ```bash
 brew install fluxcd/tap/flux
 ```
 
-**Step 9:** Create a GitHub personal access token with the `repo` scope.
+**Step 8:** Create a GitHub personal access token with the `repo` scope.
 
-**Step 10:** Set the variable. Replace `gh_token` with the personal access token.
+**Step 9:** Set the variable. Replace `gh_token` with the personal access token.
 
 ```bash
 export GITHUB_TOKEN=<gh_token>
 ````
 
-**Step 11:** Bootstrap Flux.
+**Step 10:** Bootstrap Flux.
 
 ```bash
 flux bootstrap github \
   --owner=smorenburg \
-  --repository=astro-source \
+  --repository=jingle-ops-source \
   --branch=main \
-  --path=clusters/staging \
+  --path=clusters/production \
   --personal \
   --private=false
 ```

@@ -3,9 +3,11 @@ terraform {
     azurerm = {
       version = ">= 3.84"
     }
+
     random = {
       version = ">= 3.6"
     }
+
     http = {
       version = ">= 3.4"
     }
@@ -92,6 +94,7 @@ resource "azurerm_user_assigned_identity" "tf_runner" {
   resource_group_name = azurerm_resource_group.default.name
 }
 
+# Create the federated identity credentials for the tf-runner service account.
 resource "azurerm_federated_identity_credential" "tf_runner" {
   name                = "fc-tf-${local.suffix}"
   resource_group_name = azurerm_resource_group.default.name
@@ -117,9 +120,44 @@ resource "azurerm_disk_encryption_set" "default" {
   depends_on = [azurerm_key_vault_access_policy.disk_encryption_set]
 }
 
-# Assign the contributor role to tf-runner managed identity.
-resource "azurerm_role_assignment" "contributor" {
+# Assign the 'Network Contributor' role to the Kubernetes cluster managed identity on the subnet.
+resource "azurerm_role_assignment" "network_contributor_kubernetes_cluster_subnet" {
+  scope                = azurerm_subnet.aks.id
+  role_definition_name = "Network Contributor"
+  principal_id         = azurerm_user_assigned_identity.kubernetes_cluster.principal_id
+}
+
+# Assign the 'Cluster Admin' role to the current user on the Kubernetes cluster.
+resource "azurerm_role_assignment" "cluster_admin_current_user_kubernetes_cluster" {
+  scope                = azurerm_kubernetes_cluster.default.id
+  role_definition_name = "Azure Kubernetes Service RBAC Cluster Admin"
+  principal_id         = data.azurerm_client_config.current.object_id
+}
+
+# Assign the 'AcrPull' role to the Kubernetes cluster managed identity on the shared container registry.
+resource "azurerm_role_assignment" "arcpull_kubernetes_cluster_container_registry" {
+  scope                = data.terraform_remote_state.shared.outputs.container_registry_id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_user_assigned_identity.kubernetes_cluster.principal_id
+}
+
+# Assign the 'Managed Identity Operator' role to the Kubernetes cluster managed identity on the Kubernetes cluster.
+resource "azurerm_role_assignment" "managed_identity_operator_kubernetes_cluster" {
+  scope                = azurerm_user_assigned_identity.kubernetes_cluster.id
+  role_definition_name = "Managed Identity Operator"
+  principal_id         = azurerm_user_assigned_identity.kubernetes_cluster.principal_id
+}
+
+# Assign the 'Contributor' role to tf-runner managed identity on the subscription.
+resource "azurerm_role_assignment" "contributor_tf_runner_subscription" {
   scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
   role_definition_name = "Contributor"
   principal_id         = azurerm_user_assigned_identity.tf_runner.principal_id
+}
+
+# Assign the 'Network Contributor' role to the Kubernetes cluster managed identity on the shared resource group.
+resource "azurerm_role_assignment" "network_contributor_kubernetes_cluster_resource_group" {
+  scope                = data.terraform_remote_state.shared.outputs.resource_group_id
+  role_definition_name = "Network Contributor"
+  principal_id         = azurerm_user_assigned_identity.kubernetes_cluster.principal_id
 }
