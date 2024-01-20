@@ -51,6 +51,22 @@ resource "azurerm_key_vault_access_policy" "disk_encryption_set" {
   ]
 }
 
+# Create the key vault access policy for the tf-runner managed identity.
+resource "azurerm_key_vault_access_policy" "tf_runner" {
+  key_vault_id = azurerm_key_vault.default.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = azurerm_user_assigned_identity.tf_runner.principal_id
+
+  secret_permissions = [
+    "Delete",
+    "Get",
+    "List",
+    "Purge",
+    "Recover",
+    "Set"
+  ]
+}
+
 # Create the key for the disk encryption set.
 resource "azurerm_key_vault_key" "disk_encryption_set" {
   name         = "disk-encryption-set"
