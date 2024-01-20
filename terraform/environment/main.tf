@@ -60,12 +60,6 @@ locals {
 
   # Set the authorized IP ranges for the Kubernetes cluster.
   authorized_ip_ranges = ["${local.public_ip}/32"]
-
-  # Collect the IP addresses for the NGINX ingress controllers.
-  nginx_ip_addresses = {
-    stage = data.terraform_remote_state.shared.outputs.azurerm_public_ip_ingress_nginx_stage_ip_address
-    prod  = data.terraform_remote_state.shared.outputs.azurerm_public_ip_ingress_nginx_prod_ip_address
-  }
 }
 
 # Generate a random suffix for the key vault.
