@@ -27,7 +27,7 @@ export STORAGE_ACCOUNT=<storage_account>
 ```bash
 export APP="astro"
 export LOCATION="northeurope"
-export ENVIRONMENT="production"
+export ENVIRONMENT="staging"
 export RESOURCE_GROUP="rg-tfstate-astro-neu"
 ````
 
@@ -92,7 +92,7 @@ flux bootstrap github \
   --owner=smorenburg \
   --repository=astro-source \
   --branch=main \
-  --path=clusters/production \
+  --path=clusters/${ENVIRONMENT} \
   --personal \
   --private=false
 ```
