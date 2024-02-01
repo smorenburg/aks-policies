@@ -2,7 +2,7 @@
 $resourceGroupName = "rg-tfstate-astro-neu"
 $location = "northeurope"
 $storageAccountSuffix = "stastro"
-$random = (Get-Random -Minimum 0 -Maximum 99999).ToString('000000')
+$random = -Join ("abcdefghijklmnopqrstuvwxyz1234567890".tochararray() | Get-Random -Count 6 | ForEach-Object { [char]$_ })
 $storageAccountName = $storageAccountSuffix + $random
 
 # Create the resource group.
