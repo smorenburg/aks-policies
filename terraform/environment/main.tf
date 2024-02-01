@@ -94,6 +94,13 @@ resource "azurerm_user_assigned_identity" "tf_runner" {
   resource_group_name = azurerm_resource_group.default.name
 }
 
+# Create the managed identity for Argo Workflows.
+resource "azurerm_user_assigned_identity" "argo" {
+  name                = "id-argo-${local.suffix}"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.default.name
+}
+
 # Create the federated identity credentials for the tf-runner service account.
 resource "azurerm_federated_identity_credential" "tf_runner" {
   name                = "fc-tf-${local.suffix}"
@@ -102,6 +109,16 @@ resource "azurerm_federated_identity_credential" "tf_runner" {
   issuer              = azurerm_kubernetes_cluster.default.oidc_issuer_url
   parent_id           = azurerm_user_assigned_identity.tf_runner.id
   subject             = "system:serviceaccount:flux-system:tf-runner"
+}
+
+# Create the federated identity credentials for the Argo Workflows service account.
+resource "azurerm_federated_identity_credential" "argo" {
+  name                = "fc-argo-${local.suffix}"
+  resource_group_name = azurerm_resource_group.default.name
+  audience            = ["api://AzureADTokenExchange"]
+  issuer              = azurerm_kubernetes_cluster.default.oidc_issuer_url
+  parent_id           = azurerm_user_assigned_identity.argo.id
+  subject             = "system:serviceaccount:argo:argo-workflow"
 }
 
 # Create the disk encryption set.
@@ -153,6 +170,13 @@ resource "azurerm_role_assignment" "contributor_tf_runner_subscription" {
   scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
   role_definition_name = "Contributor"
   principal_id         = azurerm_user_assigned_identity.tf_runner.principal_id
+}
+
+# Assign the 'Contributor' role to Argo Workflows managed identity on the subscription.
+resource "azurerm_role_assignment" "contributor_argo_subscription" {
+  scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_user_assigned_identity.argo.principal_id
 }
 
 # Assign the 'Network Contributor' role to the Kubernetes cluster managed identity on the shared resource group.
