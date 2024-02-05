@@ -1,35 +1,21 @@
-# Set the variables
 $resourceGroupName = "rg-tfstate-astro-neu"
 $location = "northeurope"
 $storageAccountSuffix = "stastro"
-$random = -Join ("0123456789abcdef".tochararray() |
-        Get-Random -Count 6 |
-        ForEach-Object { [char]$_ })
+$random = -Join ("abcdefghijklmnopqrstuwvxyz0123456789".tochararray() | Get-Random -Count 6 | ForEach-Object { [char]$PSItem })
 $storageAccountName = $storageAccountSuffix + $random
 
-# Create the resource group.
-New-AzResourceGroup `
-    -Name $resourceGroupName `
-    -Location $location
+New-AzResourceGroup -Name $resourceGroupName -Location $location
 
-# Create the storage account.
-New-AzStorageAccount `
-    -ResourceGroupName $resourceGroupName `
-    -Name $storageAccountName `
-    -Location $location `
-    -SkuName "Standard_RAGRS" `
-    -MinimumTlsVersion "TLS1_2"
+$account = @{
+    ResourceGroupName = $resourceGroupName
+    Name = $storageAccountName
+    Location = $location
+    SkuName = "Standard_RAGRS"
+    MinimumTlsVersion = "TLS1_2"
+}
 
-# Create the container.
-$context = New-AzStorageContext `
-    -StorageAccountName $storageAccountName `
-    -UseConnectedAccount
+New-AzStorageAccount @account
 
-New-AzStorageContainer `
-    -Name tfstate `
-    -Context $context
+$context = New-AzStorageContext -StorageAccountName $storageAccountName -UseConnectedAccount
 
-# Write the output.
-$output = "The storage account " + $storageAccountName + " has been created."
-
-Write-Host -Object $output
+New-AzStorageContainer -Name tfstate -Context $context
