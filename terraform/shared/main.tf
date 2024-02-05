@@ -33,18 +33,24 @@ locals {
 }
 
 # Generate a random suffix for the logs storage account.
-resource "random_id" "storage_account" {
-  byte_length = 3
+resource "random_string" "storage_account" {
+  length  = 6
+  special = false
+  upper   = false
 }
 
 # Generate a random suffix for the key vault.
-resource "random_id" "key_vault" {
-  byte_length = 3
+resource "random_string" "key_vault" {
+  length  = 6
+  special = false
+  upper   = false
 }
 
 # Generate a random suffix for the container registry.
-resource "random_id" "container_registry" {
-  byte_length = 3
+resource "random_string" "container_registry" {
+  length  = 6
+  special = false
+  upper   = false
 }
 
 # Create the resource group.
@@ -55,7 +61,7 @@ resource "azurerm_resource_group" "default" {
 
 # Create the storage account for the logs.
 resource "azurerm_storage_account" "logs" {
-  name                     = "st${var.app}${random_id.storage_account.hex}"
+  name                     = "st${var.app}${random_string.storage_account.result}"
   location                 = var.location
   resource_group_name      = azurerm_resource_group.default.name
   account_tier             = "Standard"
@@ -72,7 +78,7 @@ resource "azurerm_log_analytics_workspace" "default" {
 
 # Create the container registry.
 resource "azurerm_container_registry" "default" {
-  name                = "cr${var.app}${random_id.container_registry.hex}"
+  name                = "cr${var.app}${random_string.container_registry.result}"
   resource_group_name = azurerm_resource_group.default.name
   location            = var.location
   sku                 = "Premium"

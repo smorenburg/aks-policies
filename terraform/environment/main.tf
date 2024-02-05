@@ -63,8 +63,10 @@ locals {
 }
 
 # Generate a random suffix for the key vault.
-resource "random_id" "key_vault" {
-  byte_length = 3
+resource "random_string" "key_vault" {
+  length  = 6
+  special = false
+  upper   = false
 }
 
 # Create the resource group.
