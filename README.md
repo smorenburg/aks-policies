@@ -15,7 +15,7 @@ Set-AzContext <subscriptionID>
 **Step 2:** Create the storage account for the Terraform state. Copy the storage account name.
 
 ```powershell
-./scripts/Create-StorageAccount.ps1
+./scripts/New-StorageAccount.ps1
 ```
 
 **Step 3:** Set the variables. Replace `storage_account` with the storage account name.
