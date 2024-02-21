@@ -8,9 +8,9 @@ New-AzResourceGroup -Name $resourceGroupName -Location $location
 
 $account = @{
     ResourceGroupName = $resourceGroupName
-    Name = $storageAccountName
-    Location = $location
-    SkuName = "Standard_RAGRS"
+    Name              = $storageAccountName
+    Location          = $location
+    SkuName           = "Standard_RAGRS"
     MinimumTlsVersion = "TLS1_2"
 }
 
