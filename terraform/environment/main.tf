@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     azurerm = {
-      version = ">= 3.84"
+      version = ">= 3.93"
     }
 
     random = {
@@ -63,11 +63,8 @@ locals {
 }
 
 # Generate a random suffix for the key vault.
-resource "random_string" "key_vault" {
-  length  = 6
-  lower   = false
-  special = false
-  upper   = false
+resource "random_id" "key_vault" {
+  byte_length = 2
 }
 
 # Create the resource group.

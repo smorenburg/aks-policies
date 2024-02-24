@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     azurerm = {
-      version = ">= 3.84"
+      version = ">= 3.93"
     }
 
     random = {
@@ -33,27 +33,18 @@ locals {
 }
 
 # Generate a random suffix for the logs storage account.
-resource "random_string" "storage_account" {
-  length  = 6
-  lower   = false
-  special = false
-  upper   = false
+resource "random_id" "storage_account" {
+  byte_length = 2
 }
 
 # Generate a random suffix for the key vault.
-resource "random_string" "key_vault" {
-  length  = 6
-  lower   = false
-  special = false
-  upper   = false
+resource "random_id" "key_vault" {
+  byte_length = 2
 }
 
 # Generate a random suffix for the container registry.
-resource "random_string" "container_registry" {
-  length  = 6
-  lower   = false
-  special = false
-  upper   = false
+resource "random_id" "container_registry" {
+  byte_length = 2
 }
 
 # Create the resource group.
@@ -64,7 +55,7 @@ resource "azurerm_resource_group" "default" {
 
 # Create the storage account for the logs.
 resource "azurerm_storage_account" "logs" {
-  name                     = "st${var.app}${random_string.storage_account.result}"
+  name                     = "st${var.app}${random_id.storage_account.hex}"
   location                 = var.location
   resource_group_name      = azurerm_resource_group.default.name
   account_tier             = "Standard"
@@ -81,7 +72,7 @@ resource "azurerm_log_analytics_workspace" "default" {
 
 # Create the container registry.
 resource "azurerm_container_registry" "default" {
-  name                = "cr${var.app}${random_string.container_registry.result}"
+  name                = "cr${var.app}${random_id.container_registry.hex}"
   resource_group_name = azurerm_resource_group.default.name
   location            = var.location
   sku                 = "Premium"
