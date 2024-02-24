@@ -35,6 +35,7 @@ locals {
 # Generate a random suffix for the logs storage account.
 resource "random_string" "storage_account" {
   length  = 6
+  lower   = false
   special = false
   upper   = false
 }
@@ -42,6 +43,7 @@ resource "random_string" "storage_account" {
 # Generate a random suffix for the key vault.
 resource "random_string" "key_vault" {
   length  = 6
+  lower   = false
   special = false
   upper   = false
 }
@@ -49,6 +51,7 @@ resource "random_string" "key_vault" {
 # Generate a random suffix for the container registry.
 resource "random_string" "container_registry" {
   length  = 6
+  lower   = false
   special = false
   upper   = false
 }

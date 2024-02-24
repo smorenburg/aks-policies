@@ -11,7 +11,7 @@ variable "location" {
 variable "location_abbreviation" {
   description = "Optional. The abbreviation of the location."
   type        = map(string)
-  default     = {
+  default = {
     "westeurope"  = "weu"
     "northeurope" = "neu"
     "eastus"      = "eus"
@@ -29,7 +29,7 @@ variable "environment" {
 variable "environment_abbreviation" {
   description = "Optional. The abbreviation of the environment."
   type        = map(string)
-  default     = {
+  default = {
     "development" = "dev"
     "staging"     = "stage"
     "production"  = "prod"
@@ -55,7 +55,7 @@ variable "install_flux" {
 variable "kubernetes_cluster_sku_tier" {
   description = "Optional. The SKU tier that should be used for the Kubernetes cluster."
   type        = string
-  default     = "Standard"
+  default     = "Free"
 }
 
 variable "kubernetes_cluster_node_pool_system_vm_size" {
