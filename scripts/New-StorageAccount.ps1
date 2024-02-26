@@ -1,4 +1,4 @@
-$resourceGroupName = "rg-tfstate-astro-neu"
+$resourceGroupName = "rg-state-astro-neu"
 $location = "northeurope"
 $storageAccountSuffix = "stastro"
 $random = -Join ("0123456789abcdef".ToCharArray() | Get-Random -Count 4 | ForEach-Object { [char]$PSItem })
